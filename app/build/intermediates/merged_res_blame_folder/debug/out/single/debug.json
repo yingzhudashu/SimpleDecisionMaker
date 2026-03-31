@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "com.simple.decisionmaker.app-merged_res-45:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "com.simple.decisionmaker.app-main-47:/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "C:\\Users\\16785\\.gradle\\daemon\\8.2\\com.simple.decisionmaker.app-merged_res-45:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "C:\\Users\\16785\\.gradle\\daemon\\8.2\\com.simple.decisionmaker.app-main-47:\\mipmap-anydpi-v26\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\16785\\.gradle\\daemon\\8.2\\com.simple.decisionmaker.app-merged_res-45:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\16785\\.gradle\\daemon\\8.2\\com.simple.decisionmaker.app-main-47:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.simple.decisionmaker.app-merged_res-45:/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "com.simple.decisionmaker.app-main-47:/mipmap-hdpi/ic_launcher_round.png"
+    }
+]
