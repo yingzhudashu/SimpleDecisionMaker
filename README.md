@@ -2,7 +2,7 @@
 
 **告别选择困难，让随机帮你做决定！**
 
-[![Version](https://img.shields.io/badge/version-3.0.9-blue.svg)](https://github.com/yingzhudashu/SimpleDecisionMaker/releases)
+[![Version](https://img.shields.io/badge/version-1.0-blue.svg)](https://github.com/yingzhudashu/SimpleDecisionMaker/releases)
 [![Android](https://img.shields.io/badge/Android-8.0+-green.svg)](https://www.android.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/yingzhudashu/SimpleDecisionMaker)](https://github.com/yingzhudashu/SimpleDecisionMaker/releases)
@@ -119,50 +119,16 @@
 
 ## 📝 更新日志
 
-### v3.0.9 (2026-03-31)
-- ✅ 新增导入模板按钮，更方便导入别人分享的模板
-- ✅ 优化按钮大小，历史记录和模板按钮大小一致
-- ✅ 优化按钮文字，显示 emoji+ 文字说明
-
-### v3.0.8 (2026-03-31)
-- ✅ 新增粘贴导入功能，自动检测剪贴板
-- ✅ 优化按钮大小，小巧精致
-
-### v3.0.7 (2026-03-31)
-- ✅ 新增模板分享功能，每个模板可单独分享
-- ✅ 优化按钮大小，文字不再超出
-
-### v3.0.6 (2026-03-31)
-- ✅ 新增系统分享功能，可分享到微信/QQ 等
-- ✅ 优化按钮文字，显示 emoji+ 文字
-- ✅ 优化标题显示，只显示版本号
-
-### v3.0.5 (2026-03-31)
-- ✅ 优化历史记录图标，带 emoji 和文字
-- ✅ 新增自定义模板功能
-
-### v3.0.4 (2026-03-31)
-- ✅ 优化历史记录图标，更大更明显
-- ✅ 新增自定义模板功能
-
-### v3.0.3 (2026-03-31)
-- ✅ 新增历史记录统计功能
-- ✅ 显示最常选结果和常用场景
-
-### v3.0.2 (2026-03-31)
-- ✅ 修复历史记录显示错误
-- ✅ 修复权重 UI 堆叠问题
-- ✅ 修复选项列表刷新问题
-
-### v3.0.1 (2026-03-31)
-- ✅ 修复设置按钮无效
-- ✅ 修复模板选择不更新
-
-### v3.0.0 (2026-03-31)
+### v1.0 (2026-03-31)
 - ✅ 初始版本发布
 - ✅ 随机决策功能
-- ✅ 预设模板功能
+- ✅ 预设模板功能（4 个模板）
 - ✅ 权重设置功能
+- ✅ 自定义选项功能
+- ✅ 模板分享/导入功能
+- ✅ 历史记录功能
+- ✅ 系统分享功能
+- ✅ 完全离线，无广告
 
 ---
 

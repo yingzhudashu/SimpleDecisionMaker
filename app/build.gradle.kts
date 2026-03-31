@@ -11,7 +11,7 @@ android {
         applicationId = "com.simple.decisionmaker"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
+        versionCode = 9
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
