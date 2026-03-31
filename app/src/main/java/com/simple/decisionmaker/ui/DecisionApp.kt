@@ -33,7 +33,12 @@ import kotlinx.coroutines.launch
 
 // 顶层数据类，避免嵌套类引用问题
 data class OptionItem(val text: String, val weight: Int = 1)
-data class HistoryItem(val scenario: String, val result: String, val timestamp: Long = System.currentTimeMillis())
+data class HistoryItem(
+    val scenario: String, 
+    val result: String, 
+    val timestamp: Long = System.currentTimeMillis(),
+    val optionsCount: Int = 0  // 记录当时有多少选项
+)
 
 /**
  * 决策器主界面 v3.0.2 - Bug 修复版
@@ -58,7 +63,9 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
     val scale by infiniteTransition.animateFloat(initialValue = 1f, targetValue = 1.1f,
         animationSpec = infiniteRepeatable(animation = tween(800, easing = EaseInOut), repeatMode = RepeatMode.Reverse))
     
-    fun saveHistory(scenario: String, result: String) { history.add(0, HistoryItem(scenario, result)) }
+    fun saveHistory(scenario: String, result: String) { 
+        history.add(0, HistoryItem(scenario, result, System.currentTimeMillis(), options.size)) 
+    }
     
     fun shareResult(result: String) {
         scope.launch {
@@ -155,22 +162,64 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
 }
 
 @Composable fun HistoryDialog(history: List<HistoryItem>, onClear: () -> Unit, onDismiss: () -> Unit) {
+    val dateFormat = remember { java.text.SimpleDateFormat("MM-dd HH:mm", java.util.Locale.getDefault()) }
+    
+    // 统计信息
+    val totalDecisions = history.size
+    val mostChosenResult = history.groupBy { it.result }.maxByOrNull { it.value.size }?.key ?: "无"
+    val favoriteScenario = history.groupBy { it.scenario }.maxByOrNull { it.value.size }?.key ?: "无"
+    
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("📜 历史记录") },
+        title = { 
+            Column {
+                Text("📜 历史记录")
+                if (totalDecisions > 0) {
+                    Text("共 $totalDecisions 次决策", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                }
+            }
+        },
         text = {
-            if (history.isEmpty()) Text("暂无历史记录")
-            else LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
-                items(history, key = { it.timestamp }) { item ->
-                    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                        Text("• ${item.result}")
-                        Text("  场景：${item.scenario}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-                        Text("  时间：${java.text.SimpleDateFormat("MM-dd HH:mm", java.util.Locale.getDefault()).format(java.util.Date(item.timestamp))}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            if (history.isEmpty()) {
+                Text("暂无历史记录\n开始你的第一次决策吧！")
+            } else {
+                // 统计卡片
+                Card(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Text("📊 统计", style = MaterialTheme.typography.titleSmall)
+                        Text("最常选：$mostChosenResult", style = MaterialTheme.typography.bodySmall)
+                        Text("常用场景：$favoriteScenario", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+                
+                // 历史列表
+                LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
+                    items(history, key = { it.timestamp }) { item ->
+                        Card(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
+                            Column(modifier = Modifier.padding(8.dp)) {
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                    Text("• ${item.result}", style = MaterialTheme.typography.bodyLarge, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                                    if (item.optionsCount > 0) {
+                                        Text("${item.optionsCount}选 1", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                                    }
+                                }
+                                Text("场景：${item.scenario}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                                Text("时间：${dateFormat.format(java.util.Date(item.timestamp))}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                            }
+                        }
                     }
                 }
             }
         },
-        confirmButton = { TextButton(onClick = { onClear(); onDismiss() }) { Text("清空历史") } },
+        confirmButton = { 
+            if (history.isNotEmpty()) {
+                TextButton(onClick = { onClear(); onDismiss() }) { 
+                    Text("清空历史", color = MaterialTheme.colorScheme.error)
+                } 
+            } else {
+                TextButton(onClick = onDismiss) { Text("关闭") }
+            }
+        },
         dismissButton = { TextButton(onClick = onDismiss) { Text("关闭") } }
     )
 }
