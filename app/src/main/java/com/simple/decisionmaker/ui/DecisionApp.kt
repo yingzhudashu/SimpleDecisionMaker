@@ -28,6 +28,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -45,15 +48,23 @@ data class HistoryItem(
  */
 @Composable
 fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {}) {
+    // 默认显示"今天吃什么"模板的 6 个选项
     var options by remember { mutableStateOf(listOf(
-        OptionItem("火锅", 2), OptionItem("烧烤", 1), OptionItem("日料", 1), OptionItem("中餐", 1)
+        OptionItem("火锅", 1), OptionItem("烧烤", 1), OptionItem("日料", 1), 
+        OptionItem("中餐", 1), OptionItem("西餐", 1), OptionItem("快餐", 1)
     )) }
     var selectedOption by remember { mutableStateOf<String?>(null) }
     var isChoosing by remember { mutableStateOf(false) }
     var showHistory by remember { mutableStateOf(false) }
     var showWeightDialog by remember { mutableStateOf(false) }
     var showTemplateDialog by remember { mutableStateOf(false) }
-    var showSettingsDialog by remember { mutableStateOf(false) }
+    var showAddTemplateDialog by remember { mutableStateOf(false) }
+    var newTemplateName by remember { mutableStateOf("") }
+    var newTemplateOptions by remember { mutableStateOf("") }
+    var showPasteTemplateDialog by remember { mutableStateOf(false) }
+    var clipboardTemplateName by remember { mutableStateOf("") }
+    var clipboardTemplateOptions by remember { mutableStateOf("") }
+
     var newOption by remember { mutableStateOf("") }
     val history = remember { mutableStateListOf<HistoryItem>() }
     val scope = rememberCoroutineScope()
@@ -68,9 +79,41 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
     }
     
     fun shareResult(result: String) {
-        scope.launch {
-            android.widget.Toast.makeText(context, "🎲 简单决策器\n我的选择是：$result", android.widget.Toast.LENGTH_SHORT).show()
+        // 创建分享 Intent，使用 Android 系统分享功能
+        val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(android.content.Intent.EXTRA_TEXT, "🎲 我在用【简单决策器】做决定\n我的选择是：【$result】\n\n你也来试试吧！")
+            putExtra(android.content.Intent.EXTRA_SUBJECT, "简单决策器 - 我的选择")
         }
+        // 启动系统分享选择器
+        context.startActivity(android.content.Intent.createChooser(shareIntent, "分享到"))
+    }
+    
+    // 检查剪贴板是否有模板格式的内容
+    fun checkClipboardForTemplate() {
+        val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+        val clipData = clipboard.primaryClip
+        if (clipData != null && clipData.itemCount > 0) {
+            val text = clipData.getItemAt(0).text.toString()
+            // 检查是否是模板格式：📋 分享一个决策模板：【XXX】\n\n选项：XXX，XXX，XXX
+            val templateRegex = Regex("📋 分享一个决策模板：【(.+?)】\\n\\n选项：(.+)")
+            val match = templateRegex.find(text)
+            if (match != null) {
+                clipboardTemplateName = match.groupValues[1]
+                clipboardTemplateOptions = match.groupValues[2]
+                showPasteTemplateDialog = true
+            }
+        }
+    }
+    
+    // 从剪贴板导入模板
+    fun importTemplateFromClipboard() {
+        val optionList = clipboardTemplateOptions.split("，").map { it.trim() }.filter { it.isNotBlank() }
+        if (optionList.isNotEmpty()) {
+            val newOptions = optionList.map { OptionItem(it, 1) }
+            options = newOptions
+        }
+        showPasteTemplateDialog = false
     }
     
     fun weightedRandom(options: List<OptionItem>): String? {
@@ -89,13 +132,41 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
     
     Column(modifier = Modifier.fillMaxSize().padding(16.dp).background(if (darkTheme) Color(0xFF121212) else MaterialTheme.colorScheme.background), horizontalAlignment = Alignment.CenterHorizontally) {
         // 标题栏
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "🎲 简单决策器 v3.0.2", style = MaterialTheme.typography.headlineSmall, color = if (darkTheme) Color.White else MaterialTheme.colorScheme.primary)
-            Row {
-                IconButton(onClick = { showSettingsDialog = true }) { Icon(Icons.Default.Settings, "设置", tint = if (darkTheme) Color.White else Color.Unspecified) }
-                IconButton(onClick = { showTemplateDialog = true }) { Icon(Icons.Default.AddCircle, "模板", tint = if (darkTheme) Color.White else Color.Unspecified) }
-                IconButton(onClick = { showHistory = !showHistory }) { Icon(Icons.Default.List, "历史", tint = if (darkTheme) Color.White else Color.Unspecified) }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            // 第一行：标题和按钮
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "🎲 简单决策器", style = MaterialTheme.typography.titleLarge, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                Row {
+                    // 历史记录按钮 - 小巧精致
+                    OutlinedButton(
+                        onClick = { showHistory = !showHistory }, 
+                        modifier = Modifier.height(30.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                    ) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text("📜", fontSize = 14.sp)
+                            Text("历史", fontSize = 12.sp)
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    // 模板按钮 - 与历史按钮一致
+                    OutlinedButton(
+                        onClick = { showTemplateDialog = true }, 
+                        modifier = Modifier.height(30.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                    ) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text("📋", fontSize = 14.sp)
+                            Text("模板", fontSize = 12.sp)
+                        }
+                    }
+                }
             }
+            // 第二行：只显示版本号
+            Text("版本 3.0.6", 
+                style = MaterialTheme.typography.bodySmall, 
+                color = Color.Gray,
+                modifier = Modifier.padding(top = 2.dp))
         }
         Spacer(modifier = Modifier.height(16.dp))
         
@@ -150,10 +221,71 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
         }
         
         // 对话框
-        if (showSettingsDialog) AlertDialog(onDismissRequest = { showSettingsDialog = false }, title = { Text("⚙️ 设置") }, text = { Column { Text("版本：3.0.2"); Text("作者：Robot Claw"); Spacer(modifier = Modifier.height(8.dp)); Text("功能：\n- 权重设置\n- 历史记录\n- 预设模板\n- 分享功能") } }, confirmButton = { TextButton(onClick = { showSettingsDialog = false }) { Text("关闭") } })
+        // 设置对话框已移除，信息直接显示在标题下方
         if (showWeightDialog) WeightDialog(options = options, onWeightChange = { index, weight -> updateWeight(index, weight) }, onDismiss = { showWeightDialog = false })
         if (showHistory) HistoryDialog(history = history.toList(), onClear = { history.clear() }, onDismiss = { showHistory = false })
-        if (showTemplateDialog) TemplateDialog(onTemplateSelected = { template -> applyTemplate(template); showTemplateDialog = false }, onDismiss = { showTemplateDialog = false })
+        // 分享模板功能
+        fun shareTemplate(name: String, options: List<String>) {
+            val optionsText = options.joinToString("，")
+            val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(android.content.Intent.EXTRA_TEXT, "📋 分享一个决策模板：【$name】\n\n选项：$optionsText\n\n用【简单决策器】创建，你也来试试吧！")
+                putExtra(android.content.Intent.EXTRA_SUBJECT, "决策模板：$name")
+            }
+            context.startActivity(android.content.Intent.createChooser(shareIntent, "分享到"))
+        }
+        
+            // 粘贴导入对话框
+        if (showPasteTemplateDialog) AlertDialog(
+            onDismissRequest = { showPasteTemplateDialog = false },
+            title = { Text("📋 导入模板") },
+            text = {
+                Column {
+                    Text("从剪贴板导入模板：")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("【$clipboardTemplateName】", style = MaterialTheme.typography.titleMedium, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text("选项：$clipboardTemplateOptions", style = MaterialTheme.typography.bodyMedium)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("提示：如果没有检测到剪贴板内容，请先复制别人分享的模板文字。", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { importTemplateFromClipboard() }) {
+                    Text("导入")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPasteTemplateDialog = false }) {
+                    Text("取消")
+                }
+            }
+        )
+        
+        if (showTemplateDialog) TemplateDialog(
+            onTemplateSelected = { template -> applyTemplate(template); showTemplateDialog = false },
+            onAddNewTemplate = { showAddTemplateDialog = true },
+            onImportTemplate = { checkClipboardForTemplate() },
+            onShareTemplate = { name, options -> shareTemplate(name, options) },
+            onDismiss = { showTemplateDialog = false }
+        )
+        if (showAddTemplateDialog) AddTemplateDialog(
+            name = newTemplateName,
+            onNameChange = { newTemplateName = it },
+            options = newTemplateOptions,
+            onOptionsChange = { newTemplateOptions = it },
+            onSave = { 
+                // TODO: 保存到持久化存储
+                newTemplateName = ""
+                newTemplateOptions = ""
+                showAddTemplateDialog = false
+            },
+            onDismiss = { 
+                newTemplateName = ""
+                newTemplateOptions = ""
+                showAddTemplateDialog = false
+            }
+        )
     }
 }
 
@@ -224,7 +356,13 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
     )
 }
 
-@Composable fun TemplateDialog(onTemplateSelected: (List<String>) -> Unit, onDismiss: () -> Unit) {
+@Composable fun TemplateDialog(
+    onTemplateSelected: (List<String>) -> Unit,
+    onAddNewTemplate: () -> Unit,
+    onImportTemplate: () -> Unit,
+    onShareTemplate: (String, List<String>) -> Unit,
+    onDismiss: () -> Unit
+) {
     val templates = mapOf(
         "今天吃什么" to listOf("火锅", "烧烤", "日料", "中餐", "西餐", "快餐"),
         "周末去哪玩" to listOf("公园", "电影院", "商场", "博物馆", "咖啡厅", "图书馆"),
@@ -233,16 +371,109 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
     )
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("📋 选择预设模板") },
+        title = { Text("📋 选择模板") },
         text = {
-            LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
-                items(templates.entries.toList(), key = { it.key }) { entry ->
-                    Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), onClick = { onTemplateSelected(entry.value) }) {
-                        Text(entry.key, modifier = Modifier.padding(16.dp))
+            Column {
+                // 第一行：创建和导入按钮
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // 新建模板按钮
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        onClick = onAddNewTemplate,
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                    ) {
+                        Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Add, null, modifier = Modifier.size(20.dp))
+                            Text("创建", style = MaterialTheme.typography.bodyMedium, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                        }
+                    }
+                    // 导入模板按钮
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        onClick = onImportTemplate,
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                    ) {
+                        Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text("📥", fontSize = 18.sp)
+                            Text("导入", style = MaterialTheme.typography.bodyMedium, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                // 预设模板列表
+                Text("预设模板", style = MaterialTheme.typography.titleSmall, color = Color.Gray)
+                Spacer(modifier = Modifier.height(4.dp))
+                LazyColumn(modifier = Modifier.heightIn(max = 250.dp)) {
+                    items(templates.entries.toList(), key = { it.key }) { entry ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                            onClick = { onTemplateSelected(entry.value) }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(entry.key, style = MaterialTheme.typography.bodyLarge)
+                                    Text("${entry.value.size}个选项", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                                }
+                                // 分享按钮
+                                IconButton(onClick = { onShareTemplate(entry.key, entry.value) }) {
+                                    Icon(Icons.Default.Share, "分享", tint = MaterialTheme.colorScheme.primary)
+                                }
+                            }
+                        }
                     }
                 }
             }
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text("取消") } }
+    )
+}
+
+@Composable fun AddTemplateDialog(
+    name: String,
+    onNameChange: (String) -> Unit,
+    options: String,
+    onOptionsChange: (String) -> Unit,
+    onSave: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("➕ 创建新模板") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = onNameChange,
+                    label = { Text("模板名称") },
+                    placeholder = { Text("如：午餐吃什么") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = options,
+                    onValueChange = onOptionsChange,
+                    label = { Text("选项列表") },
+                    placeholder = { Text("用逗号分隔，如：火锅，烧烤，日料") },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 3
+                )
+                Text("提示：用逗号分隔每个选项", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onSave,
+                enabled = name.isNotBlank() && options.isNotBlank()
+            ) {
+                Text("保存")
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } }
     )
 }
