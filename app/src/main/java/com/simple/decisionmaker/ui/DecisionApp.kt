@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Settings
@@ -27,12 +28,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.simple.decisionmaker.data.TemplateManager
 
 // 顶层数据类，避免嵌套类引用问题
 data class OptionItem(val text: String, val weight: Int = 1)
@@ -64,11 +67,15 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
     var showPasteTemplateDialog by remember { mutableStateOf(false) }
     var clipboardTemplateName by remember { mutableStateOf("") }
     var clipboardTemplateOptions by remember { mutableStateOf("") }
+    var currentTemplateName by remember { mutableStateOf("今天吃什么") }
+    var currentOptionsCount by remember { mutableStateOf(6) }
 
     var newOption by remember { mutableStateOf("") }
     val history = remember { mutableStateListOf<HistoryItem>() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val templateManager = remember { TemplateManager(context) }
+    var allTemplates by remember { mutableStateOf(templateManager.getAllTemplates()) }
     
     val infiniteTransition = rememberInfiniteTransition()
     val scale by infiniteTransition.animateFloat(initialValue = 1f, targetValue = 1.1f,
@@ -125,10 +132,34 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
         return options.lastOrNull()?.text
     }
     
-    fun addOption(text: String) { if (text.isNotBlank()) options = options + OptionItem(text, 1) }
-    fun removeOption(index: Int) { if (index in options.indices) options = options.toMutableList().apply { removeAt(index) } }
+    fun saveCurrentOptionsToTemplate(templateName: String) {
+        val optionTexts = options.map { it.text }
+        templateManager.modifyTemplate(templateName, optionTexts)
+        allTemplates = templateManager.getAllTemplates()
+    }
+    
+    fun addOption(text: String) { 
+        if (text.isNotBlank()) {
+            options = options + OptionItem(text, 1)
+            currentOptionsCount = options.size
+            // 自动保存到当前模板
+            saveCurrentOptionsToTemplate(currentTemplateName)
+        }
+    }
+    fun removeOption(index: Int) { 
+        if (index in options.indices) {
+            options = options.toMutableList().apply { removeAt(index) }
+            currentOptionsCount = options.size
+            // 自动保存到当前模板
+            saveCurrentOptionsToTemplate(currentTemplateName)
+        }
+    }
     fun updateWeight(index: Int, newWeight: Int) { if (index in options.indices) options = options.toMutableList().apply { set(index, get(index).copy(weight = newWeight)) } }
-    fun applyTemplate(template: List<String>) { options = template.map { OptionItem(it, 1) } }
+    fun applyTemplate(template: List<String>, templateName: String = "今天吃什么") { 
+        options = template.map { OptionItem(it, 1) }
+        currentTemplateName = templateName
+        currentOptionsCount = template.size
+    }
     
     Column(modifier = Modifier.fillMaxSize().padding(16.dp).background(if (darkTheme) Color(0xFF121212) else MaterialTheme.colorScheme.background), horizontalAlignment = Alignment.CenterHorizontally) {
         // 标题栏
@@ -162,11 +193,6 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
                     }
                 }
             }
-            // 第二行：只显示版本号
-            Text("版本 3.0.6", 
-                style = MaterialTheme.typography.bodySmall, 
-                color = Color.Gray,
-                modifier = Modifier.padding(top = 2.dp))
         }
         Spacer(modifier = Modifier.height(16.dp))
         
@@ -188,7 +214,7 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
         Spacer(modifier = Modifier.height(16.dp))
         
         // 开始按钮
-        Button(onClick = { if (!isChoosing && options.size > 1) { isChoosing = true; selectedOption = null; scope.launch { delay(1500); selectedOption = weightedRandom(options); if (selectedOption != null) saveHistory("自定义", selectedOption!!); isChoosing = false } } },
+        Button(onClick = { if (!isChoosing && options.size > 1) { isChoosing = true; selectedOption = null; scope.launch { delay(1500); selectedOption = weightedRandom(options); if (selectedOption != null) saveHistory(currentTemplateName, selectedOption!!); isChoosing = false } } },
             enabled = !isChoosing && options.size > 1, modifier = Modifier.fillMaxWidth().height(56.dp)) {
             Text(text = if (isChoosing) "🎲 选择中..." else "🎯 开始决定", style = MaterialTheme.typography.titleMedium)
         }
@@ -196,11 +222,25 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
         
         // 选项管理
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("📝 选项列表（带权重）", style = MaterialTheme.typography.titleMedium)
+            Text("$currentTemplateName · $currentOptionsCount 个选项", 
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis)
             Row {
-                OutlinedButton(onClick = { showWeightDialog = true }) { Icon(Icons.Default.Info, null, modifier = Modifier.size(16.dp)); Spacer(modifier = Modifier.width(4.dp)); Text("权重") }
-                Spacer(modifier = Modifier.width(8.dp))
-                IconButton(onClick = { addOption(newOption); newOption = "" }) { Icon(Icons.Default.Add, "添加") }
+                OutlinedButton(
+                    onClick = { showWeightDialog = true },
+                    modifier = Modifier.height(30.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text("⚖️", fontSize = 14.sp)
+                        Text("权重", fontSize = 12.sp)
+                    }
+                }
+                Spacer(modifier = Modifier.width(6.dp))
+                IconButton(onClick = { addOption(newOption); newOption = "" }) {
+                    Icon(Icons.Default.Add, "添加")
+                }
             }
         }
         OutlinedTextField(value = newOption, onValueChange = { newOption = it }, label = { Text("新选项") }, modifier = Modifier.fillMaxWidth(), singleLine = true, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done), keyboardActions = KeyboardActions(onDone = { addOption(newOption); newOption = "" }))
@@ -263,10 +303,13 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
         )
         
         if (showTemplateDialog) TemplateDialog(
-            onTemplateSelected = { template -> applyTemplate(template); showTemplateDialog = false },
+            templates = allTemplates,
+            isDefaultTemplate = { name -> templateManager.isDefaultTemplate(name) },
+            onTemplateSelected = { templateName: String, template: List<String> -> applyTemplate(template, templateName); showTemplateDialog = false },
             onAddNewTemplate = { showAddTemplateDialog = true },
             onImportTemplate = { checkClipboardForTemplate() },
-            onShareTemplate = { name, options -> shareTemplate(name, options) },
+            onShareTemplate = { name: String, options: List<String> -> shareTemplate(name, options) },
+            onTemplateDeleted = { templateName: String -> templateManager.deleteTemplate(templateName); allTemplates = templateManager.getAllTemplates() },
             onDismiss = { showTemplateDialog = false }
         )
         if (showAddTemplateDialog) AddTemplateDialog(
@@ -275,7 +318,12 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
             options = newTemplateOptions,
             onOptionsChange = { newTemplateOptions = it },
             onSave = { 
-                // TODO: 保存到持久化存储
+                // 保存到持久化存储（包括修改预设模板）
+                val optionList = newTemplateOptions.split("，").map { it.trim() }.filter { it.isNotBlank() }
+                if (optionList.isNotEmpty()) {
+                    templateManager.modifyTemplate(newTemplateName, optionList)
+                    allTemplates = templateManager.getAllTemplates()
+                }
                 newTemplateName = ""
                 newTemplateOptions = ""
                 showAddTemplateDialog = false
@@ -357,18 +405,15 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
 }
 
 @Composable fun TemplateDialog(
-    onTemplateSelected: (List<String>) -> Unit,
+    templates: Map<String, List<String>>,
+    isDefaultTemplate: (String) -> Boolean = { false },
+    onTemplateSelected: (String, List<String>) -> Unit,
     onAddNewTemplate: () -> Unit,
     onImportTemplate: () -> Unit,
     onShareTemplate: (String, List<String>) -> Unit,
+    onTemplateDeleted: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val templates = mapOf(
-        "今天吃什么" to listOf("火锅", "烧烤", "日料", "中餐", "西餐", "快餐"),
-        "周末去哪玩" to listOf("公园", "电影院", "商场", "博物馆", "咖啡厅", "图书馆"),
-        "喝什么" to listOf("奶茶", "咖啡", "果汁", "可乐", "矿泉水", "茶"),
-        "晚餐吃什么" to listOf("炒菜", "汤面", "饺子", "粥", "沙拉", "三明治")
-    )
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("📋 选择模板") },
@@ -409,7 +454,7 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
                     items(templates.entries.toList(), key = { it.key }) { entry ->
                         Card(
                             modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
-                            onClick = { onTemplateSelected(entry.value) }
+                            onClick = { onTemplateSelected(entry.key, entry.value) }
                         ) {
                             Row(
                                 modifier = Modifier.padding(16.dp),
@@ -418,11 +463,16 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
                             ) {
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(entry.key, style = MaterialTheme.typography.bodyLarge)
-                                    Text("${entry.value.size}个选项", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                                    Text("${entry.value.size}个选项", style = MaterialTheme.typography.bodySmall, color = if (isDefaultTemplate(entry.key)) Color.Gray else MaterialTheme.colorScheme.primary)
                                 }
                                 // 分享按钮
                                 IconButton(onClick = { onShareTemplate(entry.key, entry.value) }) {
                                     Icon(Icons.Default.Share, "分享", tint = MaterialTheme.colorScheme.primary)
+                                }
+                                
+                                // 所有模板都显示删除按钮（包括预设模板）
+                                IconButton(onClick = { onTemplateDeleted(entry.key) }) {
+                                    Icon(Icons.Default.Delete, "删除", tint = MaterialTheme.colorScheme.error)
                                 }
                             }
                         }
