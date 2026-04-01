@@ -168,44 +168,49 @@ fun DecisionApp(
     Column(modifier = Modifier.fillMaxSize().padding(16.dp).background(if (darkTheme) Color(0xFF121212) else MaterialTheme.colorScheme.background), horizontalAlignment = Alignment.CenterHorizontally) {
         // 标题栏
         Column(modifier = Modifier.fillMaxWidth()) {
-            // 第一行：标题和按钮
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "🎲 简单决策器", style = MaterialTheme.typography.titleLarge, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
-                Row {
-                    // 历史记录按钮 - 小巧精致
-                    OutlinedButton(
-                        onClick = { showHistory = !showHistory }, 
-                        modifier = Modifier.height(30.dp),
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-                    ) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text("📜", fontSize = 14.sp)
-                            Text("历史", fontSize = 12.sp)
-                        }
+            // 第一行：标题
+            Text(text = "🎲 简单决策器", style = MaterialTheme.typography.titleLarge, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // 第二行：添加小组件按钮（独立一行）
+            Button(
+                onClick = onAddWidgetRequested,
+                modifier = Modifier.fillMaxWidth().height(44.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                )
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text("📌", fontSize = 18.sp)
+                    Text("添加到桌面", style = MaterialTheme.typography.bodyMedium, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            // 第三行：历史和模板按钮
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                // 历史记录按钮
+                OutlinedButton(
+                    onClick = { showHistory = !showHistory }, 
+                    modifier = Modifier.weight(1f).height(36.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text("📜", fontSize = 16.sp)
+                        Text("历史", style = MaterialTheme.typography.bodyMedium)
                     }
-                    Spacer(modifier = Modifier.width(6.dp))
-                    // 模板按钮 - 与历史按钮一致
-                    OutlinedButton(
-                        onClick = { showTemplateDialog = true }, 
-                        modifier = Modifier.height(30.dp),
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-                    ) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text("📋", fontSize = 14.sp)
-                            Text("模板", fontSize = 12.sp)
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(6.dp))
-                    // 添加小组件按钮
-                    OutlinedButton(
-                        onClick = onAddWidgetRequested, 
-                        modifier = Modifier.height(30.dp),
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-                    ) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text("📌", fontSize = 14.sp)
-                            Text("小组件", fontSize = 12.sp)
-                        }
+                }
+                // 模板按钮
+                OutlinedButton(
+                    onClick = { showTemplateDialog = true }, 
+                    modifier = Modifier.weight(1f).height(36.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text("📋", fontSize = 16.sp)
+                        Text("模板", style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }

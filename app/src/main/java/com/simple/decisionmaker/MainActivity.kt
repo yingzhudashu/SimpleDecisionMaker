@@ -58,17 +58,25 @@ class MainActivity : ComponentActivity() {
             val appWidgetManager = getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
             val myProvider = ComponentName(this, DecisionWidgetProvider::class.java)
             
-            // 检查是否支持小组件
+            // 检查是否支持直接添加小组件
             if (appWidgetManager.isRequestPinAppWidgetSupported) {
-                // 发送添加小组件请求
+                // 使用 Pin 方式添加小组件（Android 8.0+）
                 appWidgetManager.requestPinAppWidget(myProvider, null, null)
-                Toast.makeText(this, "📌 请在桌面空白处长按，然后选择小组件", Toast.LENGTH_LONG).show()
+                
+                // 显示成功提示
+                Toast.makeText(this, "✅ 小组件已添加到桌面！", Toast.LENGTH_LONG).show()
             } else {
-                // 不支持自动添加，显示手动添加说明
-                Toast.makeText(this, "⚠️ 请在桌面长按，选择'小组件' → '简单决策器'", Toast.LENGTH_LONG).show()
+                // 不支持自动添加，尝试直接发送广播
+                val intent = Intent(AppWidgetManager.ACTION_APPWIDGET_PICK).apply {
+                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
+                    putExtra(AppWidgetManager.EXTRA_CUSTOM_INFO, myProvider)
+                }
+                startActivity(intent)
+                Toast.makeText(this, "📌 请在桌面选择小组件位置", Toast.LENGTH_LONG).show()
             }
         } catch (e: Exception) {
-            Toast.makeText(this, "❌ 添加失败，请手动添加小组件", Toast.LENGTH_LONG).show()
+            // 如果都失败了，引导用户手动添加
+            Toast.makeText(this, "⚠️ 请长按桌面→小组件→选择简单决策器", Toast.LENGTH_LONG).show()
         }
     }
 }
