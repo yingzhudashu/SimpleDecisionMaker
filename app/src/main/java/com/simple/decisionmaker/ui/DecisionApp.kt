@@ -220,12 +220,64 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
         }
         Spacer(modifier = Modifier.height(16.dp))
         
-        // 选项管理
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("$currentTemplateName · $currentOptionsCount 个选项", 
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis)
+        // 选项管理 - 两行布局，按钮靠右且垂直对齐
+        Column(modifier = Modifier.fillMaxWidth()) {
+            // 第一行：文字区域（左）+ 权重按钮（右）
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // 文字区域（占据剩余空间）
+                Text(
+                    text = "$currentTemplateName · $currentOptionsCount 个选项",
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                // 权重按钮（靠右）
+                OutlinedButton(
+                    onClick = { showWeightDialog = true },
+                    modifier = Modifier.height(30.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(3.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("⚖️", fontSize = 14.sp)
+                        Text("权重", fontSize = 12.sp)
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(4.dp))
+            
+            // 第二行：输入框（左）+ 添加按钮（右）
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // 输入框（占据剩余空间）
+                OutlinedTextField(
+                    value = newOption,
+                    onValueChange = { newOption = it },
+                    label = { Text("新选项") },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { addOption(newOption); newOption = "" })
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                // 添加按钮（靠右，与权重按钮垂直对齐）
+                IconButton(onClick = { addOption(newOption); newOption = "" }) {
+                    Icon(Icons.Default.Add, "添加")
+                }
+            }
+        }
             Row {
                 OutlinedButton(
                     onClick = { showWeightDialog = true },
