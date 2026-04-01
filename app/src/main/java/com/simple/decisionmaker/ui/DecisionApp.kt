@@ -168,51 +168,49 @@ fun DecisionApp(
     Column(modifier = Modifier.fillMaxSize().padding(16.dp).background(if (darkTheme) Color(0xFF121212) else MaterialTheme.colorScheme.background), horizontalAlignment = Alignment.CenterHorizontally) {
         // 标题栏
         Column(modifier = Modifier.fillMaxWidth()) {
-            // 第一行：标题和添加到桌面按钮
+            // 第一行：标题 + 历史 + 模板按钮
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "🎲 简单决策器", style = MaterialTheme.typography.titleLarge, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
-                // 添加到桌面按钮（窄版）
-                Button(
-                    onClick = onAddWidgetRequested,
-                    modifier = Modifier.height(32.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
-                    ),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-                ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text("📌", fontSize = 14.sp)
-                        Text("桌面", fontSize = 11.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    // 历史记录按钮
+                    OutlinedButton(
+                        onClick = { showHistory = !showHistory }, 
+                        modifier = Modifier.height(30.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                    ) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text("📜", fontSize = 14.sp)
+                            Text("历史", fontSize = 12.sp)
+                        }
+                    }
+                    // 模板按钮
+                    OutlinedButton(
+                        onClick = { showTemplateDialog = true }, 
+                        modifier = Modifier.height(30.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                    ) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text("📋", fontSize = 14.sp)
+                            Text("模板", fontSize = 12.sp)
+                        }
                     }
                 }
             }
             
             Spacer(modifier = Modifier.height(8.dp))
             
-            // 第二行：历史和模板按钮（右上角）
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-                // 历史记录按钮
-                OutlinedButton(
-                    onClick = { showHistory = !showHistory }, 
-                    modifier = Modifier.height(30.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-                ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text("📜", fontSize = 14.sp)
-                        Text("历史", fontSize = 12.sp)
-                    }
-                }
-                Spacer(modifier = Modifier.width(6.dp))
-                // 模板按钮
-                OutlinedButton(
-                    onClick = { showTemplateDialog = true }, 
-                    modifier = Modifier.height(30.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-                ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text("📋", fontSize = 14.sp)
-                        Text("模板", fontSize = 12.sp)
-                    }
+            // 第二行：添加到桌面按钮（窄而长）
+            Button(
+                onClick = onAddWidgetRequested,
+                modifier = Modifier.fillMaxWidth(0.6f).height(36.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                ),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text("📌", fontSize = 16.sp)
+                    Text("添加到桌面", fontSize = 12.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                 }
             }
         }

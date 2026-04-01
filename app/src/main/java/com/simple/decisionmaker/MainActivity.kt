@@ -62,11 +62,19 @@ class MainActivity : ComponentActivity() {
             if (appWidgetManager.isRequestPinAppWidgetSupported) {
                 val provider = ComponentName(this, DecisionWidgetProvider::class.java)
                 
-                // 调用 requestPinAppWidget，系统会弹出确认对话框
-                // 用户确认后会自动添加到桌面
-                appWidgetManager.requestPinAppWidget(provider, null, null)
-                
-                Toast.makeText(this, "✅ 请点击系统对话框确认添加", Toast.LENGTH_LONG).show()
+                try {
+                    // 调用 requestPinAppWidget，系统会弹出确认对话框
+                    // 用户确认后会自动添加到桌面
+                    appWidgetManager.requestPinAppWidget(provider, null, null)
+                    
+                    // 延迟显示提示，避免遮挡系统对话框
+                    android.os.Handler(mainLooper).postDelayed({
+                        Toast.makeText(this, "✅ 如未看到弹窗，请检查桌面权限", Toast.LENGTH_LONG).show()
+                    }, 1000)
+                } catch (e: Exception) {
+                    // 发生错误，显示手动引导
+                    showManualWidgetGuide()
+                }
             } else {
                 // 设备不支持，显示手动引导
                 showManualWidgetGuide()
@@ -83,7 +91,7 @@ class MainActivity : ComponentActivity() {
     private fun showManualWidgetGuide() {
         Toast.makeText(
             this, 
-            "⚠️ 请长按桌面空白处 → 选择'小组件' → 找到'简单决策器'", 
+            "⚠️ 请长按桌面空白处 → 选择'小组件' → 找到'简单决策器' → 拖动到桌面", 
             Toast.LENGTH_LONG
         ).show()
     }
