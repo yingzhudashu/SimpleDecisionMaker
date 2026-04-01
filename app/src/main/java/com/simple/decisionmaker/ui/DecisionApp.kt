@@ -278,24 +278,7 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
                 }
             }
         }
-            Row {
-                OutlinedButton(
-                    onClick = { showWeightDialog = true },
-                    modifier = Modifier.height(30.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-                ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text("⚖️", fontSize = 14.sp)
-                        Text("权重", fontSize = 12.sp)
-                    }
-                }
-                Spacer(modifier = Modifier.width(6.dp))
-                IconButton(onClick = { addOption(newOption); newOption = "" }) {
-                    Icon(Icons.Default.Add, "添加")
-                }
-            }
-        }
-        OutlinedTextField(value = newOption, onValueChange = { newOption = it }, label = { Text("新选项") }, modifier = Modifier.fillMaxWidth(), singleLine = true, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done), keyboardActions = KeyboardActions(onDone = { addOption(newOption); newOption = "" }))
+        
         Spacer(modifier = Modifier.height(8.dp))
         
         // 选项列表

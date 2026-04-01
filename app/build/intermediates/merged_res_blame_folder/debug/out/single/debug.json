@@ -1,10 +1,10 @@
 [
     {
-        "merged": "com.simple.decisionmaker.app-merged_res-45:/mipmap-hdpi_ic_launcher.png.flat",
-        "source": "com.simple.decisionmaker.app-main-47:/mipmap-hdpi/ic_launcher.png"
+        "merged": "com.simple.decisionmaker.app-merged_res-4:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "com.simple.decisionmaker.app-main-6:/mipmap-hdpi/ic_launcher.png"
     },
     {
-        "merged": "com.simple.decisionmaker.app-merged_res-45:/mipmap-hdpi_ic_launcher_round.png.flat",
-        "source": "com.simple.decisionmaker.app-main-47:/mipmap-hdpi/ic_launcher_round.png"
+        "merged": "com.simple.decisionmaker.app-merged_res-4:/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "com.simple.decisionmaker.app-main-6:/mipmap-hdpi/ic_launcher_round.png"
     }
 ]
