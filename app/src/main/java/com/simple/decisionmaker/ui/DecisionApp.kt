@@ -361,6 +361,15 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
             onAddNewTemplate = { showAddTemplateDialog = true },
             onImportTemplate = { checkClipboardForTemplate() },
             onShareTemplate = { name: String, options: List<String> -> shareTemplate(name, options) },
+            onTemplateRenamed = { oldName: String, newName: String -> 
+                // 重命名模板：先复制旧模板内容，保存为新名称，然后删除旧模板
+                val oldTemplate = allTemplates[oldName]
+                if (oldTemplate != null) {
+                    templateManager.modifyTemplate(newName, oldTemplate)
+                    templateManager.deleteTemplate(oldName)
+                    allTemplates = templateManager.getAllTemplates()
+                }
+            },
             onTemplateDeleted = { templateName: String -> templateManager.deleteTemplate(templateName); allTemplates = templateManager.getAllTemplates() },
             onDismiss = { showTemplateDialog = false }
         )
@@ -463,9 +472,14 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
     onAddNewTemplate: () -> Unit,
     onImportTemplate: () -> Unit,
     onShareTemplate: (String, List<String>) -> Unit,
+    onTemplateRenamed: (String, String) -> Unit,  // 新增：模板重命名回调
     onTemplateDeleted: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
+    var showRenameDialog by remember { mutableStateOf(false) }
+    var templateToRename by remember { mutableStateOf<String?>(null) }
+    var newName by remember { mutableStateOf("") }
+    
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("📋 选择模板") },
@@ -522,6 +536,17 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
                                     Icon(Icons.Default.Share, "分享", tint = MaterialTheme.colorScheme.primary)
                                 }
                                 
+                                // 编辑名称按钮（只有非预设模板可以编辑）
+                                if (!isDefaultTemplate(entry.key)) {
+                                    IconButton(onClick = { 
+                                        templateToRename = entry.key
+                                        newName = entry.key
+                                        showRenameDialog = true
+                                    }) {
+                                        Icon(Icons.Default.Edit, "编辑名称", tint = MaterialTheme.colorScheme.secondary)
+                                    }
+                                }
+                                
                                 // 所有模板都显示删除按钮（包括预设模板）
                                 IconButton(onClick = { onTemplateDeleted(entry.key) }) {
                                     Icon(Icons.Default.Delete, "删除", tint = MaterialTheme.colorScheme.error)
@@ -534,6 +559,46 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text("取消") } }
     )
+    
+    // 重命名对话框
+    if (showRenameDialog) {
+        AlertDialog(
+            onDismissRequest = { showRenameDialog = false },
+            title = { Text("✏️ 修改模板名称") },
+            text = {
+                Column {
+                    Text("请输入新的模板名称：")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = newName,
+                        onValueChange = { newName = it },
+                        label = { Text("模板名称") },
+                        placeholder = { Text("如：午餐吃什么") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        if (newName.isNotBlank() && templateToRename != null) {
+                            onTemplateRenamed(templateToRename!!, newName)
+                        }
+                        showRenameDialog = false
+                    },
+                    enabled = newName.isNotBlank()
+                ) {
+                    Text("确定")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRenameDialog = false }) {
+                    Text("取消")
+                }
+            }
+        )
+    }
 }
 
 @Composable fun AddTemplateDialog(
