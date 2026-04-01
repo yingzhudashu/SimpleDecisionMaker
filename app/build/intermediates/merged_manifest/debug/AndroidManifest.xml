@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.simple.decisionmaker"
-    android:versionCode="3"
-    android:versionName="1.2.1" >
+    android:versionCode="4"
+    android:versionName="1.2.2" >
 
     <uses-sdk
         android:minSdkVersion="26"
@@ -34,6 +34,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- 桌面小组件 -->
+        <receiver
+            android:name="com.simple.decisionmaker.widget.DecisionWidgetProvider"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.simple.decisionmaker.MAKE_DECISION" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
+
         <activity
             android:name="androidx.compose.ui.tooling.PreviewActivity"
             android:exported="true" />

@@ -1,6 +1,16 @@
 R_DEF: Internal format may change without notice
 local
+dimen widget_margin
+drawable widget_background
+drawable widget_button_background
+id widget_decision_button
+id widget_layout
+id widget_result
+id widget_title
+layout widget_decision
 mipmap ic_launcher
 mipmap ic_launcher_round
 string app_name
+string widget_description
 style Theme.SimpleDecisionMaker
+xml widget_info

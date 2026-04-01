@@ -2,7 +2,7 @@
 
 一个简洁实用的随机决策工具，帮助你快速做出选择。
 
-[![Version](https://img.shields.io/badge/version-1.2.1-blue.svg)](https://github.com/yingzhudashu/SimpleDecisionMaker/releases)
+[![Version](https://img.shields.io/badge/version-1.2.2-blue.svg)](https://github.com/yingzhudashu/SimpleDecisionMaker/releases)
 [![Release](https://img.shields.io/github/release/yingzhudashu/SimpleDecisionMaker.svg)](https://github.com/yingzhudashu/SimpleDecisionMaker/releases)
 [![Android](https://img.shields.io/badge/Android-8.0+-green.svg)](https://www.android.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -38,6 +38,16 @@
 5. **调整权重**: 点击 ⚖️ 权重按钮
 
 ## 📝 更新日志
+
+### v1.2.2 (2026-04-01)
+
+#### 新功能
+- ✅ 模板名称可修改（编辑按钮）
+- ✅ 桌面小组件（110x110dp，一键决策）
+
+#### 布局优化
+- ✅ 按钮靠右对齐且垂直对齐
+- ✅ 文字和输入框占据左侧空间
 
 ### v1.2.1 (2026-04-01)
 

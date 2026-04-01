@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:2:1-24:12
-INJECTED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:2:1-24:12
-INJECTED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:2:1-24:12
-INJECTED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:2:1-24:12
+ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:2:1-37:12
 MERGED from [androidx.compose.material3:material3-android:1.2.1] C:\Users\16785\AppData\Local\Temp\gradle-cache\caches\transforms-3\409efa339740ddc1cc54a27f5c89ecb0\transformed\material3-release\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.compose.material:material-android:1.6.5] C:\Users\16785\AppData\Local\Temp\gradle-cache\caches\transforms-3\0daaf25aab326e729c9e60db9c9993a2\transformed\material-release\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.material:material-icons-core-android:1.6.5] C:\Users\16785\AppData\Local\Temp\gradle-cache\caches\transforms-3\01adccc5e55294fdcc213fd7009ee38c\transformed\material-icons-core-release\AndroidManifest.xml:2:1-7:12
@@ -58,8 +58,8 @@ MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\16785\AppData\Local\Temp\g
 	xmlns:android
 		ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:2:11-69
 application
-ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:4:5-22:19
-INJECTED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:4:5-22:19
+ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:4:5-35:19
+INJECTED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:4:5-35:19
 MERGED from [androidx.compose.ui:ui-tooling-android:1.6.5] C:\Users\16785\AppData\Local\Temp\gradle-cache\caches\transforms-3\111ff83807eba4ec2c25b5db49b0b32d\transformed\ui-tooling-release\AndroidManifest.xml:22:5-26:19
 MERGED from [androidx.compose.ui:ui-tooling-android:1.6.5] C:\Users\16785\AppData\Local\Temp\gradle-cache\caches\transforms-3\111ff83807eba4ec2c25b5db49b0b32d\transformed\ui-tooling-release\AndroidManifest.xml:22:5-26:19
 MERGED from [androidx.compose.ui:ui-test-manifest:1.6.5] C:\Users\16785\AppData\Local\Temp\gradle-cache\caches\transforms-3\7bdc9651d133a6c9d36da90ef65a2ebd\transformed\ui-test-manifest-1.6.5\AndroidManifest.xml:22:5-26:19
@@ -110,6 +110,28 @@ category#android.intent.category.LAUNCHER
 ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:18:17-77
 	android:name
 		ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:18:27-74
+receiver#com.simple.decisionmaker.widget.DecisionWidgetProvider
+ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:23:9-33:20
+	android:exported
+		ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:25:13-36
+	android:name
+		ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:24:13-58
+intent-filter#action:name:android.appwidget.action.APPWIDGET_UPDATE+action:name:com.simple.decisionmaker.MAKE_DECISION
+ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:26:13-29:29
+action#android.appwidget.action.APPWIDGET_UPDATE
+ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:27:17-84
+	android:name
+		ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:27:25-81
+action#com.simple.decisionmaker.MAKE_DECISION
+ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:28:17-81
+	android:name
+		ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:28:25-78
+meta-data#android.appwidget.provider
+ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:30:13-32:55
+	android:resource
+		ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:32:17-52
+	android:name
+		ADDED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml:31:17-58
 uses-sdk
 INJECTED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\16785\.openclaw\workspace\SimpleDecisionMaker\app\src\main\AndroidManifest.xml

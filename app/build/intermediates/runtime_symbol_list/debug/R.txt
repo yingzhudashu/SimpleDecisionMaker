@@ -45,6 +45,7 @@ int dimen notification_small_icon_size_as_large 0x7f030012
 int dimen notification_subtext_size 0x7f030013
 int dimen notification_top_pad 0x7f030014
 int dimen notification_top_pad_large_text 0x7f030015
+int dimen widget_margin 0x7f030016
 int drawable ic_call_answer 0x7f040000
 int drawable ic_call_answer_low 0x7f040001
 int drawable ic_call_answer_video 0x7f040002
@@ -64,6 +65,8 @@ int drawable notification_template_icon_bg 0x7f04000f
 int drawable notification_template_icon_low_bg 0x7f040010
 int drawable notification_tile_bg 0x7f040011
 int drawable notify_panel_notification_icon_bg 0x7f040012
+int drawable widget_background 0x7f040013
+int drawable widget_button_background 0x7f040014
 int id accessibility_action_clickable_span 0x7f050000
 int id accessibility_custom_action_0 0x7f050001
 int id accessibility_custom_action_1 0x7f050002
@@ -150,7 +153,11 @@ int id view_tree_lifecycle_owner 0x7f050052
 int id view_tree_on_back_pressed_dispatcher_owner 0x7f050053
 int id view_tree_saved_state_registry_owner 0x7f050054
 int id view_tree_view_model_store_owner 0x7f050055
-int id wrapped_composition_tag 0x7f050056
+int id widget_decision_button 0x7f050056
+int id widget_layout 0x7f050057
+int id widget_result 0x7f050058
+int id widget_title 0x7f050059
+int id wrapped_composition_tag 0x7f05005a
 int integer status_bar_notification_info_maxnum 0x7f060000
 int layout custom_dialog 0x7f070000
 int layout ime_base_split_test_activity 0x7f070001
@@ -161,6 +168,7 @@ int layout notification_template_custom_big 0x7f070005
 int layout notification_template_icon_group 0x7f070006
 int layout notification_template_part_chronometer 0x7f070007
 int layout notification_template_part_time 0x7f070008
+int layout widget_decision 0x7f070009
 int mipmap ic_launcher 0x7f080000
 int mipmap ic_launcher_round 0x7f080001
 int string androidx_startup 0x7f090000
@@ -248,6 +256,7 @@ int string tab 0x7f090051
 int string template_percent 0x7f090052
 int string tooltip_description 0x7f090053
 int string tooltip_label 0x7f090054
+int string widget_description 0x7f090055
 int style DialogWindowTheme 0x7f0a0000
 int style FloatingDialogTheme 0x7f0a0001
 int style FloatingDialogWindowTheme 0x7f0a0002
@@ -303,3 +312,4 @@ int styleable GradientColor_android_endY 11
 int[] styleable GradientColorItem { 0x010101a5, 0x01010514 }
 int styleable GradientColorItem_android_color 0
 int styleable GradientColorItem_android_offset 1
+int xml widget_info 0x7f0c0000

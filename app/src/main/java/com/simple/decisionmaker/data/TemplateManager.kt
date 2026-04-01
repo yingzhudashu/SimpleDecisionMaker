@@ -97,6 +97,37 @@ class TemplateManager(context: Context) {
     }
     
     /**
+     * 重命名模板
+     */
+    fun renameTemplate(oldName: String, newName: String) {
+        val savedTemplatesJson = prefs.getString("custom_templates", null)
+        
+        val customTemplates: MutableMap<String, List<String>> = if (savedTemplatesJson != null) {
+            val saved: Map<String, List<String>> = gson.fromJson(savedTemplatesJson, Map::class.java) as Map<String, List<String>>
+            saved.toMutableMap()
+        } else {
+            mutableMapOf()
+        }
+        
+        // 获取旧模板的选项
+        val allTemplates = getAllTemplates()
+        val options = allTemplates[oldName]
+        
+        if (options != null) {
+            // 保存为新名称
+            customTemplates[newName] = options
+            // 删除旧名称（如果是自定义模板）
+            if (!isDefaultTemplate(oldName)) {
+                customTemplates.remove(oldName)
+            }
+            // 保存
+            prefs.edit()
+                .putString("custom_templates", gson.toJson(customTemplates))
+                .apply()
+        }
+    }
+    
+    /**
      * 检查是否是预设模板
      */
     fun isDefaultTemplate(name: String): Boolean {
