@@ -52,31 +52,39 @@ class MainActivity : ComponentActivity() {
     
     /**
      * 添加小组件到桌面
+     * 使用官方 requestPinAppWidget API (Android 8.0+)
      */
     private fun addWidgetToHomeScreen() {
-        try {
-            val appWidgetManager = getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
-            val myProvider = ComponentName(this, DecisionWidgetProvider::class.java)
-            
-            // 检查是否支持直接添加小组件
+        val appWidgetManager = getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Android 8.0+ 使用官方 API
             if (appWidgetManager.isRequestPinAppWidgetSupported) {
-                // 使用 Pin 方式添加小组件（Android 8.0+）
-                appWidgetManager.requestPinAppWidget(myProvider, null, null)
+                val provider = ComponentName(this, DecisionWidgetProvider::class.java)
                 
-                // 显示成功提示
-                Toast.makeText(this, "✅ 小组件已添加到桌面！", Toast.LENGTH_LONG).show()
+                // 调用 requestPinAppWidget，系统会弹出确认对话框
+                // 用户确认后会自动添加到桌面
+                appWidgetManager.requestPinAppWidget(provider, null, null)
+                
+                Toast.makeText(this, "✅ 请点击系统对话框确认添加", Toast.LENGTH_LONG).show()
             } else {
-                // 不支持自动添加，尝试直接发送广播
-                val intent = Intent(AppWidgetManager.ACTION_APPWIDGET_PICK).apply {
-                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
-                    putExtra(AppWidgetManager.EXTRA_CUSTOM_INFO, myProvider)
-                }
-                startActivity(intent)
-                Toast.makeText(this, "📌 请在桌面选择小组件位置", Toast.LENGTH_LONG).show()
+                // 设备不支持，显示手动引导
+                showManualWidgetGuide()
             }
-        } catch (e: Exception) {
-            // 如果都失败了，引导用户手动添加
-            Toast.makeText(this, "⚠️ 请长按桌面→小组件→选择简单决策器", Toast.LENGTH_LONG).show()
+        } else {
+            // Android 7.1 及以下，显示手动引导
+            showManualWidgetGuide()
         }
+    }
+    
+    /**
+     * 显示手动添加小组件引导
+     */
+    private fun showManualWidgetGuide() {
+        Toast.makeText(
+            this, 
+            "⚠️ 请长按桌面空白处 → 选择'小组件' → 找到'简单决策器'", 
+            Toast.LENGTH_LONG
+        ).show()
     }
 }
