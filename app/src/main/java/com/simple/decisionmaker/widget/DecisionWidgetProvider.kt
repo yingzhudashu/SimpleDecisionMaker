@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import android.widget.Toast
+import com.simple.decisionmaker.MainActivity
 import com.simple.decisionmaker.R
 import com.simple.decisionmaker.data.TemplateManager
 
@@ -18,7 +19,7 @@ class DecisionWidgetProvider : AppWidgetProvider() {
     
     companion object {
         const val ACTION_MAKE_DECISION = "com.simple.decisionmaker.MAKE_DECISION"
-        const val ACTION_REFRESH_WIDGET = "com.simple.decisionmaker.REFRESH_WIDGET"
+        const val ACTION_OPEN_APP = "com.simple.decisionmaker.OPEN_APP"
     }
     
     override fun onUpdate(
@@ -57,15 +58,12 @@ class DecisionWidgetProvider : AppWidgetProvider() {
                 }
             }
             
-            ACTION_REFRESH_WIDGET -> {
-                val appWidgetId = intent.getIntExtra(
-                    AppWidgetManager.EXTRA_APPWIDGET_ID,
-                    AppWidgetManager.INVALID_APPWIDGET_ID
-                )
-                
-                if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-                    updateAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId)
+            ACTION_OPEN_APP -> {
+                // 打开应用
+                val openIntent = Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                 }
+                context.startActivity(openIntent)
             }
         }
     }
@@ -86,9 +84,21 @@ class DecisionWidgetProvider : AppWidgetProvider() {
             context,
             appWidgetId,
             decisionIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_MUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         views.setOnClickPendingIntent(R.id.widget_decision_button, decisionPendingIntent)
+        
+        // 设置整个小组件点击打开应用
+        val openAppIntent = Intent(context, DecisionWidgetProvider::class.java).apply {
+            action = ACTION_OPEN_APP
+        }
+        val openAppPendingIntent = PendingIntent.getBroadcast(
+            context,
+            appWidgetId + 1000,
+            openAppIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        views.setOnClickPendingIntent(R.id.widget_layout, openAppPendingIntent)
         
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }

@@ -19,17 +19,18 @@
             </intent-filter>
         </activity>
         
-        <!-- 桌面小组件 -->
+        <!-- 桌面小组件 (2x2) -->
         <receiver
             android:name=".widget.DecisionWidgetProvider"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.simple.decisionmaker.MAKE_DECISION" />
+                <action android:name="com.simple.decisionmaker.OPEN_APP" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info" />
+                android:resource="@xml/widget_info_medium" />
         </receiver>
         
     </application>

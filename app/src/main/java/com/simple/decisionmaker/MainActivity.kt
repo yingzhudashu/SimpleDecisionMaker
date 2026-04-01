@@ -1,30 +1,29 @@
 package com.simple.decisionmaker
 
-import android.appwidget.AppWidgetManager
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import com.simple.decisionmaker.ui.DecisionApp
 import com.simple.decisionmaker.ui.theme.SimpleDecisionTheme
-import com.simple.decisionmaker.widget.DecisionWidgetProvider
 
 /**
  * 简单决策器 - 主活动
  * 帮助用户做日常小决定
  */
 class MainActivity : ComponentActivity() {
+    
+    private var showWidgetGuideDialog = mutableStateOf(false)
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,57 +41,25 @@ class MainActivity : ComponentActivity() {
                         color = MaterialTheme.colorScheme.background
                     ) {
                         DecisionApp(
-                            onAddWidgetRequested = { addWidgetToHomeScreen() }
+                            onAddWidgetRequested = { showWidgetGuideDialog.value = true }
                         )
                     }
                 }
-            }
-        }
-    }
-    
-    /**
-     * 添加小组件到桌面
-     * 使用官方 requestPinAppWidget API (Android 8.0+)
-     */
-    private fun addWidgetToHomeScreen() {
-        val appWidgetManager = getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
-        
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Android 8.0+ 使用官方 API
-            if (appWidgetManager.isRequestPinAppWidgetSupported) {
-                val provider = ComponentName(this, DecisionWidgetProvider::class.java)
                 
-                try {
-                    // 调用 requestPinAppWidget，系统会弹出确认对话框
-                    // 用户确认后会自动添加到桌面
-                    appWidgetManager.requestPinAppWidget(provider, null, null)
-                    
-                    // 延迟显示提示，避免遮挡系统对话框
-                    android.os.Handler(mainLooper).postDelayed({
-                        Toast.makeText(this, "✅ 如未看到弹窗，请检查桌面权限", Toast.LENGTH_LONG).show()
-                    }, 1000)
-                } catch (e: Exception) {
-                    // 发生错误，显示手动引导
-                    showManualWidgetGuide()
+                // 显示引导对话框
+                if (showWidgetGuideDialog.value) {
+                    AlertDialog(
+                        onDismissRequest = { showWidgetGuideDialog.value = false },
+                        title = { Text("添加桌面小组件") },
+                        text = { Text("请长按桌面空白处 → 选择'小组件' → 找到'简单决策器' → 拖动到桌面") },
+                        confirmButton = {
+                            TextButton(onClick = { showWidgetGuideDialog.value = false }) {
+                                Text("知道了")
+                            }
+                        }
+                    )
                 }
-            } else {
-                // 设备不支持，显示手动引导
-                showManualWidgetGuide()
             }
-        } else {
-            // Android 7.1 及以下，显示手动引导
-            showManualWidgetGuide()
         }
-    }
-    
-    /**
-     * 显示手动添加小组件引导
-     */
-    private fun showManualWidgetGuide() {
-        Toast.makeText(
-            this, 
-            "⚠️ 请长按桌面空白处 → 选择'小组件' → 找到'简单决策器' → 拖动到桌面", 
-            Toast.LENGTH_LONG
-        ).show()
     }
 }

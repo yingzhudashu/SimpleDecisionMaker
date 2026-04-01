@@ -199,18 +199,18 @@ fun DecisionApp(
             
             Spacer(modifier = Modifier.height(8.dp))
             
-            // 第二行：添加到桌面按钮（窄而长）
+            // 第二行：添加桌面小组件按钮（和结果显示区一样长，高度减少 30%）
             Button(
                 onClick = onAddWidgetRequested,
-                modifier = Modifier.fillMaxWidth(0.6f).height(36.dp),
+                modifier = Modifier.fillMaxWidth().height(28.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary
                 ),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp)
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text("📌", fontSize = 16.sp)
-                    Text("添加到桌面", fontSize = 12.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                    Text("添加桌面小组件", fontSize = 12.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                 }
             }
         }

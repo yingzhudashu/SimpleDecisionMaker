@@ -2,4 +2,7 @@
 <resources>
     <string name="app_name">简单决策器</string>
     <string name="widget_description">快速决策小工具 - 点击一下，立即决定</string>
+    <string name="widget_description_small">迷你决策工具 (1x1)</string>
+    <string name="widget_description_medium">标准决策工具 (2x2)</string>
+    <string name="widget_description_large">大型决策工具 (3x2)</string>
 </resources>
