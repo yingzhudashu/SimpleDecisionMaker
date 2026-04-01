@@ -50,7 +50,11 @@ data class HistoryItem(
  * 决策器主界面 v3.0.2 - Bug 修复版
  */
 @Composable
-fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {}) {
+fun DecisionApp(
+    darkTheme: Boolean = false,
+    onThemeChange: (Boolean) -> Unit = {},
+    onAddWidgetRequested: () -> Unit = {}
+) {
     // 默认显示"今天吃什么"模板的 6 个选项
     var options by remember { mutableStateOf(listOf(
         OptionItem("火锅", 1), OptionItem("烧烤", 1), OptionItem("日料", 1), 
@@ -189,6 +193,18 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
                         Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
                             Text("📋", fontSize = 14.sp)
                             Text("模板", fontSize = 12.sp)
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    // 添加小组件按钮
+                    OutlinedButton(
+                        onClick = onAddWidgetRequested, 
+                        modifier = Modifier.height(30.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                    ) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text("📌", fontSize = 14.sp)
+                            Text("小组件", fontSize = 12.sp)
                         }
                     }
                 }
