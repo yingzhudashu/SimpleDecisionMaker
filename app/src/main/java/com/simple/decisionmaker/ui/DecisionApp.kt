@@ -469,16 +469,16 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
         text = {
             Column {
                 // 第一行：创建和导入按钮
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     // 新建模板按钮
                     Card(
                         modifier = Modifier.weight(1f),
                         onClick = onAddNewTemplate,
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
                     ) {
-                        Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Add, null, modifier = Modifier.size(20.dp))
-                            Text("创建", style = MaterialTheme.typography.bodyMedium, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                        Row(modifier = Modifier.padding(8.dp), horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Add, null, modifier = Modifier.size(16.dp))
+                            Text("创建", style = MaterialTheme.typography.bodySmall, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                         }
                     }
                     // 导入模板按钮
@@ -487,36 +487,36 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
                         onClick = onImportTemplate,
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
                     ) {
-                        Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text("📥", fontSize = 18.sp)
-                            Text("导入", style = MaterialTheme.typography.bodyMedium, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                        Row(modifier = Modifier.padding(8.dp), horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text("📥", fontSize = 16.sp)
+                            Text("导入", style = MaterialTheme.typography.bodySmall, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                         }
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 
                 // 预设模板列表
-                Text("预设模板", style = MaterialTheme.typography.titleSmall, color = Color.Gray)
+                Text("预设模板", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 Spacer(modifier = Modifier.height(4.dp))
-                LazyColumn(modifier = Modifier.heightIn(max = 250.dp)) {
+                LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
                     items(templates.entries.toList(), key = { it.key }) { entry ->
                         Card(
                             modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
                             onClick = { onTemplateSelected(entry.key, entry.value) }
                         ) {
                             Row(
-                                modifier = Modifier.padding(16.dp),
+                                modifier = Modifier.padding(12.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Column(modifier = Modifier.weight(1f)) {
-                                    Text(entry.key, style = MaterialTheme.typography.bodyLarge)
+                                    Text(entry.key, style = MaterialTheme.typography.bodyMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
                                     Text("${entry.value.size}个选项", style = MaterialTheme.typography.bodySmall, color = if (isDefaultTemplate(entry.key)) Color.Gray else MaterialTheme.colorScheme.primary)
                                 }
                                 // 分享按钮
-                                IconButton(onClick = { onShareTemplate(entry.key, entry.value) }) {
-                                    Icon(Icons.Default.Share, "分享", tint = MaterialTheme.colorScheme.primary)
+                                IconButton(onClick = { onShareTemplate(entry.key, entry.value) }, modifier = Modifier.size(32.dp)) {
+                                    Icon(Icons.Default.Share, "分享", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
                                 }
                                 
                                 // 编辑名称按钮（只有非预设模板可以编辑）
@@ -525,14 +525,14 @@ fun DecisionApp(darkTheme: Boolean = false, onThemeChange: (Boolean) -> Unit = {
                                         templateToRename = entry.key
                                         newName = entry.key
                                         showRenameDialog = true
-                                    }) {
-                                        Icon(Icons.Default.Edit, "编辑名称", tint = MaterialTheme.colorScheme.secondary)
+                                    }, modifier = Modifier.size(32.dp)) {
+                                        Icon(Icons.Default.Edit, "编辑名称", tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(18.dp))
                                     }
                                 }
                                 
                                 // 所有模板都显示删除按钮（包括预设模板）
-                                IconButton(onClick = { onTemplateDeleted(entry.key) }) {
-                                    Icon(Icons.Default.Delete, "删除", tint = MaterialTheme.colorScheme.error)
+                                IconButton(onClick = { onTemplateDeleted(entry.key) }, modifier = Modifier.size(32.dp)) {
+                                    Icon(Icons.Default.Delete, "删除", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
                                 }
                             }
                         }

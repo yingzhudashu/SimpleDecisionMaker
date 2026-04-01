@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="widget_margin">8dp</dimen>
-    <string name="app_name">简单决策器</string>
-    <string name="widget_description">快速决策小工具 - 点击一下，立即决定</string>
-    <style name="Theme.SimpleDecisionMaker" parent="android:Theme.Material.Light.NoActionBar"/>
-</resources>

@@ -86,7 +86,7 @@ class DecisionWidgetProvider : AppWidgetProvider() {
             context,
             appWidgetId,
             decisionIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_MUTABLE
         )
         views.setOnClickPendingIntent(R.id.widget_decision_button, decisionPendingIntent)
         
